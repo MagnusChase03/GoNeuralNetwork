@@ -17,7 +17,7 @@ func main() {
         neuralnetwork.Forward(network, inputs)
     }
 
-    err := neuralnetwork.Save(network, "./data")
+    err := neuralnetwork.Save(network, "./data/network.json")
     if (err != nil) {
         fmt.Println(err)
     }

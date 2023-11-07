@@ -1,9 +1,10 @@
 package neuralnetwork
 
 import (
-    "strconv"
+    "os"
     "errors"
     "github.com/MagnusChase03/GoNN/layer"
+    "encoding/json"
 )
 
 type NeuralNetwork struct {
@@ -66,12 +67,25 @@ func Update(neuralnetwork *NeuralNetwork) {
 }
 
 func Save(neuralnetwork *NeuralNetwork, filepath string) error {
-    for i := 0; i < len(neuralnetwork.Layers); i++ {
-        err := layer.Save(neuralnetwork.Layers[i], filepath + "/layer" + strconv.Itoa(i) + ".dat")
-        if (err != nil) {
-            return err
-        }
+
+    f, err := os.Create(filepath)
+    if (err != nil) {
+        return err
     }
+
+    defer f.Close()
+
+    data, err := json.Marshal(*neuralnetwork)
+    if (err != nil) {
+        return err
+    }
+
+    _, err = f.Write(data)
+    if (err != nil) {
+        return err
+    }
+
+    return nil
 
     return nil
 }
