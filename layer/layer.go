@@ -1,9 +1,11 @@
 package layer
 
 import (
+    "os"
     "math"
     "math/rand"
     "errors"
+    "encoding/json"
 )
 
 type Layer struct {
@@ -134,4 +136,25 @@ func Update(layer *Layer) {
             }
         }
     } 
+}
+
+func Save(layer *Layer, filepath string) error {
+    f, err := os.Create(filepath)
+    if (err != nil) {
+        return err
+    }
+
+    defer f.Close()
+
+    data, err := json.Marshal(*layer)
+    if (err != nil) {
+        return err
+    }
+
+    _, err = f.Write(data)
+    if (err != nil) {
+        return err
+    }
+
+    return nil
 }

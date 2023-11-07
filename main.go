@@ -17,5 +17,10 @@ func main() {
         neuralnetwork.Forward(network, inputs)
     }
 
+    err := neuralnetwork.Save(network, "./data")
+    if (err != nil) {
+        fmt.Println(err)
+    }
+
     fmt.Println(network.Layers[len(network.Layers) - 1].Outputs)
 }

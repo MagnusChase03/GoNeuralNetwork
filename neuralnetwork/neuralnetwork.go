@@ -1,6 +1,7 @@
 package neuralnetwork
 
 import (
+    "strconv"
     "errors"
     "github.com/MagnusChase03/GoNN/layer"
 )
@@ -62,4 +63,15 @@ func Update(neuralnetwork *NeuralNetwork) {
     for i := 0; i < len(neuralnetwork.Layers); i++ {
         layer.Update(neuralnetwork.Layers[i])
     }
+}
+
+func Save(neuralnetwork *NeuralNetwork, filepath string) error {
+    for i := 0; i < len(neuralnetwork.Layers); i++ {
+        err := layer.Save(neuralnetwork.Layers[i], filepath + "/layer" + strconv.Itoa(i) + ".dat")
+        if (err != nil) {
+            return err
+        }
+    }
+
+    return nil
 }
