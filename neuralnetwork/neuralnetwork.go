@@ -75,7 +75,7 @@ func Save(neuralnetwork *NeuralNetwork, filepath string) error {
 
     defer f.Close()
 
-    data, err := json.Marshal(*neuralnetwork)
+    data, err := json.MarshalIndent(*neuralnetwork, "", "    ")
     if (err != nil) {
         return err
     }
