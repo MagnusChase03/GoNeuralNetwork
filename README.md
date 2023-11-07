@@ -1,2 +1,2 @@
-# GoNerualNetwork
-A nerual network written in Go
+# GoNeuralNetwork
+A neural network written in Go
