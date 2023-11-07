@@ -7,15 +7,16 @@ import (
 )
 
 type Layer struct {
-    Shape    []int
+    Shape           []int
 
-    Inputs   []float64
-    Cache    []float64
-    Outputs  []float64
+    Inputs          []float64
+    Outputs         []float64
 
-    Weights  [][]float64
-    Bias     []float64
-    Delta    []float64
+    Weights         [][]float64
+    Bias            []float64
+    Delta_Inputs    []float64
+    Delta_Weights   [][]float64
+    Delta_Bias      []float64
 }
 
 func Create_Layer(inputs int, outputs int) *Layer {
@@ -26,18 +27,20 @@ func Create_Layer(inputs int, outputs int) *Layer {
     layer.Shape[1] = outputs
 
     layer.Inputs = make([]float64,inputs,inputs)
-    layer.Delta = make([]float64,inputs,inputs)
+    layer.Delta_Inputs = make([]float64,inputs,inputs)
 
-    layer.Cache = make([]float64,outputs,outputs)
     layer.Outputs = make([]float64,outputs,outputs)
     layer.Bias = make([]float64,outputs,outputs)
+    layer.Delta_Bias = make([]float64,outputs,outputs)
 
     layer.Weights = make([][]float64,inputs,inputs)
+    layer.Delta_Weights = make([][]float64,inputs,inputs)
     for i := 0; i < inputs; i++ {
         layer.Weights[i] = make([]float64,outputs,outputs)
         for j := 0; j < outputs; j++ {
             layer.Weights[i][j] = rand.Float64() / 100
         }
+        layer.Delta_Weights[i] = make([]float64,outputs,outputs)
     }
 
     return layer
@@ -61,8 +64,7 @@ func Forward(layer *Layer, inputs []float64) error {
         for j := 0; j < layer.Shape[0]; j++ {
             total += layer.Weights[j][i] * inputs[j]
         }
-        layer.Cache[i] = total + layer.Bias[i]
-        layer.Outputs[i] = Sigmoid(layer.Cache[i])
+        layer.Outputs[i] = Sigmoid(total + layer.Bias[i])
     }
 
     return nil 
@@ -83,27 +85,53 @@ func Backward(layer *Layer, outputs []float64, learning_rate float64, hidden_lay
     }
 
     for i := 0; i < layer.Shape[0]; i++ {
-        layer.Delta[i] = 0.0
         for j := 0; j < layer.Shape[1]; j++ {
             if (hidden_layer) {
-                layer.Delta[i] += outputs[j] * 
-                                  layer.Outputs[j] * (1 - layer.Outputs[j]) * 
-                                  layer.Weights[i][j] * learning_rate
+                layer.Delta_Inputs[i] += outputs[j] * 
+                                         layer.Outputs[j] * (1 - layer.Outputs[j]) * 
+                                         layer.Weights[i][j] * learning_rate
 
-                layer.Weights[i][j] += outputs[j] * 
-                                       layer.Outputs[j] * (1 - layer.Outputs[j]) * 
-                                       layer.Inputs[i] * learning_rate
+                layer.Delta_Weights[i][j] += outputs[j] * 
+                                             layer.Outputs[j] * (1 - layer.Outputs[j]) * 
+                                             layer.Inputs[i] * learning_rate
+
+                if (i == 0) {
+                    layer.Delta_Bias[j] += outputs[j] * 
+                                           layer.Outputs[j] * (1 - layer.Outputs[j]) * 
+                                           learning_rate
+                }
             } else {
-                layer.Delta[i] += 2 * (outputs[j] - layer.Outputs[j]) * 
-                                  layer.Outputs[j] * (1 - layer.Outputs[j]) * 
-                                  layer.Weights[i][j] * learning_rate
+                layer.Delta_Inputs[i] += 2 * (outputs[j] - layer.Outputs[j]) * 
+                                         layer.Outputs[j] * (1 - layer.Outputs[j]) * 
+                                         layer.Weights[i][j] * learning_rate
 
-                layer.Weights[i][j] += 2 * (outputs[j] - layer.Outputs[j]) * 
-                                       layer.Outputs[j] * (1 - layer.Outputs[j]) * 
-                                       layer.Inputs[i] * learning_rate
+                layer.Delta_Weights[i][j] += 2 * (outputs[j] - layer.Outputs[j]) * 
+                                             layer.Outputs[j] * (1 - layer.Outputs[j]) * 
+                                             layer.Inputs[i] * learning_rate
+
+                if (i == 0) {
+                    layer.Delta_Bias[j] += 2 * (outputs[j] - layer.Outputs[j]) * 
+                                           layer.Outputs[j] * (1 - layer.Outputs[j]) * 
+                                           learning_rate
+                }
             }
         }
     }
 
     return nil
+}
+
+func Update(layer *Layer) {
+    for i := 0; i < layer.Shape[0]; i++ {
+        layer.Delta_Inputs[i] = 0.0
+        for j := 0; j < layer.Shape[1]; j++ {
+            layer.Weights[i][j] += layer.Delta_Weights[i][j]
+            layer.Delta_Weights[i][j] = 0.0
+
+            if (i == 0) {
+                layer.Bias[j] += layer.Delta_Bias[j]
+                layer.Delta_Bias[j] = 0.0
+            }
+        }
+    } 
 }

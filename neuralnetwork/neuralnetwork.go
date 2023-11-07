@@ -52,8 +52,14 @@ func Backward(neuralnetwork *NeuralNetwork, outputs []float64) error {
 
     layer.Backward(neuralnetwork.Layers[len(neuralnetwork.Layers) - 1], outputs, neuralnetwork.Learning_Rate, false)
     for i := len(neuralnetwork.Layers) - 2; i >= 0; i-- {
-        layer.Backward(neuralnetwork.Layers[i], neuralnetwork.Layers[i + 1].Delta, neuralnetwork.Learning_Rate, true)
+        layer.Backward(neuralnetwork.Layers[i], neuralnetwork.Layers[i + 1].Delta_Inputs, neuralnetwork.Learning_Rate, true)
     }
 
     return nil
+}
+
+func Update(neuralnetwork *NeuralNetwork) {
+    for i := 0; i < len(neuralnetwork.Layers); i++ {
+        layer.Update(neuralnetwork.Layers[i])
+    }
 }

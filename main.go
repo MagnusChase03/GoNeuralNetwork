@@ -13,6 +13,7 @@ func main() {
 
     for i := 0; i < 10000; i++ {
         neuralnetwork.Backward(network, outputs)
+        neuralnetwork.Update(network)
         neuralnetwork.Forward(network, inputs)
     }
 
