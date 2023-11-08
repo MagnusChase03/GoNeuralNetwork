@@ -89,3 +89,16 @@ func Save(neuralnetwork *NeuralNetwork, filepath string) error {
 
     return nil
 }
+
+func Load(filepath string) *NeuralNetwork {
+    neuralnetwork := new(NeuralNetwork);
+
+    content, err := os.ReadFile(filepath)
+    if (err != nil) {
+        return nil
+    }
+
+    json.Unmarshal(content, neuralnetwork)
+
+    return neuralnetwork
+}

@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-    network := neuralnetwork.Create_NeuralNetwork([][]int{{3, 2}, {2, 2}}, 0.1)
+    //network := neuralnetwork.Create_NeuralNetwork([][]int{{3, 2}, {2, 2}}, 0.1)
+    network := neuralnetwork.Load("./data/network.json")
     inputs := []float64{1.0, 2.0, 3.0}
     outputs := []float64{1.0, 0.0}
     neuralnetwork.Forward(network, inputs)
