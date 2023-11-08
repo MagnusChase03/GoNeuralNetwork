@@ -24,7 +24,7 @@ func Create_NeuralNetwork(shapes [][]int, leanring_rate float64) *NeuralNetwork 
 
     neuralnetwork.Layers = make([]*layer.Layer,len(shapes),len(shapes))
     for i := 0; i < len(shapes); i++ {
-        if (i > 0 && shapes[i][1] != shapes[i][0]) {
+        if (i > 0 && shapes[i - 1][1] != shapes[i][0]) {
             return nil
         }
 
@@ -68,24 +68,15 @@ func Update(neuralnetwork *NeuralNetwork) {
 
 func Save(neuralnetwork *NeuralNetwork, filepath string) error {
 
-    f, err := os.Create(filepath)
-    if (err != nil) {
-        return err
-    }
-
-    defer f.Close()
-
     data, err := json.MarshalIndent(*neuralnetwork, "", "    ")
     if (err != nil) {
         return err
     }
 
-    _, err = f.Write(data)
+    err = os.WriteFile(filepath, data, 0644)
     if (err != nil) {
         return err
     }
-
-    return nil
 
     return nil
 }
