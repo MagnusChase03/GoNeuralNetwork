@@ -15,6 +15,7 @@ func main() {
 
     err := cli.Execute(args)
     if (err != nil) {
+        fmt.Printf("\033[1;31m[ERROR]\033[0m")
         fmt.Println(err)
     }
 }

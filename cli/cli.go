@@ -9,8 +9,8 @@ import (
 )
 
 type NeuralNetwork_Structure struct {
-    Learning_Rate float64
-    Layer_Shapes [][]int
+    Learning_Rate  float64
+    Layer_Shapes   [][]int
 }
 
 func Execute(args []string) error {
@@ -19,7 +19,7 @@ func Execute(args []string) error {
         return err
     }
 
-    return errors.New("\033[1;31mInvalid Command.\033[0m")
+    return errors.New("Invalid Command.")
 }
 
 func Create(name string) error {
