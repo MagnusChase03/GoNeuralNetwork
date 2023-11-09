@@ -29,3 +29,4 @@ A neural network written in Go
 * Make custom syntax file
 * Convolusion layers
 * Different activation functions
+* RNN
