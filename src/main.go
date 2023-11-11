@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/MagnusChase03/gonn/layer/denselayer"	
 	"github.com/MagnusChase03/gonn/neuralnetwork"	
 )
 
@@ -28,6 +29,7 @@ func main() {
 		n.Update()
 
 	}
+	log.Printf("%v\n", n.Layers[1].(*denselayer.DenseLayer).Outputs)
 
 	if err := n.Save("tmp.dat"); err != nil {
 		log.Fatalf("[ERROR] %w\n", err);

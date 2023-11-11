@@ -10,6 +10,8 @@ import (
 	"encoding/gob"
 
 	"github.com/MagnusChase03/gonn/layer"
+	"github.com/MagnusChase03/gonn/layer/denselayer"
+	"github.com/MagnusChase03/gonn/activationfunctions"
 )
 
 // The NeuralNetwork struct is used
@@ -36,7 +38,7 @@ func CreateNeuralNetwork(shapes [][]int, learningRate float64) (*NeuralNetwork, 
             return nil, fmt.Errorf("dimension error")
         }
 
-        neuralnetwork.Layers[i] = layer.CreateDenseLayer(shapes[i][0], shapes[i][1])
+        neuralnetwork.Layers[i] = denselayer.CreateDenseLayer(shapes[i][0], shapes[i][1])
     }
 
     return neuralnetwork, nil
@@ -89,11 +91,19 @@ func (n *NeuralNetwork) Update() {
 	}
 } 
 
+// Register to the gob encoding, the different
+// struct that will need to be encoded when saving
+// or loading the neural network.
+func gobRegister() {
+	gob.Register(&NeuralNetwork{})
+	gob.Register(&denselayer.DenseLayer{})
+	gob.Register(&activationfunctions.Sigmoid{})
+}
+
 // Save stores the entire state of the 
 // neural network into a file on disk
 func (n *NeuralNetwork) Save(filepath string) error {
-	gob.Register(&NeuralNetwork{})
-	gob.Register(&layer.DenseLayer{})
+	gobRegister()
 
 	content := &bytes.Buffer{}
 	enc := gob.NewEncoder(content)
@@ -119,8 +129,7 @@ func Load(filepath string) (*NeuralNetwork, error) {
 	neuralnetwork := new(NeuralNetwork)
 	buffer := bytes.NewBuffer(content)
 
-	gob.Register(&NeuralNetwork{})
-	gob.Register(&layer.DenseLayer{})
+	gobRegister()
 	dec := gob.NewDecoder(buffer)
 	if err := dec.Decode(&neuralnetwork); err != nil {
 		return nil, err
